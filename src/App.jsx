@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
+import heroImage from './assets/hero.png'
 
 const STORAGE_KEY = 'engfolio-projects'
 
@@ -68,6 +69,23 @@ const fields = [
 ]
 
 const actionVerbs = ['Designed', 'Developed', 'Built', 'Tested', 'Optimized']
+
+const outputBadges = ['Resume', 'GitHub', 'LinkedIn', 'Interview', 'Portfolio']
+
+const featureCards = [
+  {
+    title: 'Career-ready wording',
+    text: 'Translate technical project notes into materials that stay specific, measurable, and honest.',
+  },
+  {
+    title: 'One project, five formats',
+    text: 'Generate resume bullets, GitHub README copy, LinkedIn posts, interview prompts, and portfolio cards.',
+  },
+  {
+    title: 'Private local library',
+    text: 'Save strong project drafts in this browser and reload them when you want to refine the story.',
+  },
+]
 
 function clean(value, fallback) {
   return value.trim() || fallback
@@ -228,21 +246,52 @@ ${outputs.card.demo ? `Demo: ${outputs.card.demo}` : ''}`,
 
   return (
     <main className="app-shell">
-      <section className="intro-section">
-        <div className="intro-copy">
-          <p className="eyebrow">Engineering student portfolio builder</p>
-          <h1>EngFolio</h1>
-          <p className="intro-text">
-            Turn real project details into polished career materials without paid APIs or inflated language.
+      <section className="hero-section">
+        <div className="hero-copy">
+          <div className="hero-kicker">
+            <span className="status-dot" aria-hidden="true" />
+            Engineering student portfolio builder
+          </div>
+          <h1>Build a sharper story for every engineering project.</h1>
+          <p className="hero-text">
+            EngFolio turns real build notes into polished career materials without paid APIs,
+            generic filler, or inflated claims.
           </p>
+          <div className="badge-row" aria-label="Generated output types">
+            {outputBadges.map((badge) => (
+              <span className="output-badge" key={badge}>
+                {badge}
+              </span>
+            ))}
+          </div>
+          <div className="hero-actions" aria-label="Primary workflow summary">
+            <span>Describe the build</span>
+            <span>Generate assets</span>
+            <span>Save locally</span>
+          </div>
         </div>
-        <div className="intro-panel" aria-label="Generated output preview">
-          <span>Resume</span>
-          <span>README</span>
-          <span>LinkedIn</span>
-          <span>Interview</span>
-          <span>Portfolio</span>
+
+        <div className="hero-visual" aria-label="EngFolio preview">
+          <img src={heroImage} alt="" />
+          <div className="preview-card preview-card-main">
+            <span>Portfolio draft</span>
+            <strong>{clean(project.title, 'Autonomous rover prototype')}</strong>
+            <p>{clean(project.field, 'Robotics engineering')}</p>
+          </div>
+          <div className="preview-card preview-card-small">
+            <span>Outputs ready</span>
+            <strong>5</strong>
+          </div>
         </div>
+      </section>
+
+      <section className="feature-grid" aria-label="EngFolio features">
+        {featureCards.map((feature) => (
+          <article className="feature-card" key={feature.title}>
+            <h2>{feature.title}</h2>
+            <p>{feature.text}</p>
+          </article>
+        ))}
       </section>
 
       <section className="workspace" aria-label="EngFolio generator">
@@ -294,17 +343,22 @@ ${outputs.card.demo ? `Demo: ${outputs.card.demo}` : ''}`,
           <div className="section-heading">
             <p className="eyebrow">Local library</p>
             <h2>Saved projects</h2>
+            <p className="section-subtitle">Recent project stories stored in this browser.</p>
           </div>
 
           {savedProjects.length === 0 ? (
-            <p className="empty-state">Saved projects will appear here and stay in this browser.</p>
+            <div className="empty-state">
+              <strong>No saved projects yet</strong>
+              <p>Save a draft to keep your strongest project stories close while you iterate.</p>
+            </div>
           ) : (
             <div className="saved-list">
               {savedProjects.map((savedProject) => (
                 <article className="saved-item" key={savedProject.id}>
                   <div>
+                    <span className="saved-type">{clean(savedProject.field, 'Engineering')}</span>
                     <h3>{clean(savedProject.title, 'Untitled project')}</h3>
-                    <p>{clean(savedProject.field, 'Engineering')}</p>
+                    <p>{clean(savedProject.impact, 'Project impact ready to refine.')}</p>
                   </div>
                   <div className="saved-actions">
                     <button type="button" onClick={() => loadProject(savedProject)}>
@@ -325,11 +379,17 @@ ${outputs.card.demo ? `Demo: ${outputs.card.demo}` : ''}`,
         <div className="section-heading">
           <p className="eyebrow">Generated materials</p>
           <h2>{generated ? 'Ready to tailor and submit' : 'Fill in the form, then generate'}</h2>
+          <p className="section-subtitle">
+            Each card is formatted for a specific career surface so you can copy, edit, and ship faster.
+          </p>
         </div>
 
         <div className="output-grid">
           <article className="output-card">
-            <h3>Resume bullets</h3>
+            <div className="card-header">
+              <span className="output-badge">Resume</span>
+              <h3>Resume bullets</h3>
+            </div>
             <ul>
               {outputs.resume.map((bullet) => (
                 <li key={bullet}>{bullet}</li>
@@ -338,17 +398,26 @@ ${outputs.card.demo ? `Demo: ${outputs.card.demo}` : ''}`,
           </article>
 
           <article className="output-card readme-card">
-            <h3>GitHub README summary</h3>
+            <div className="card-header">
+              <span className="output-badge">GitHub</span>
+              <h3>README summary</h3>
+            </div>
             <pre>{outputs.readme}</pre>
           </article>
 
           <article className="output-card">
-            <h3>LinkedIn project post</h3>
+            <div className="card-header">
+              <span className="output-badge">LinkedIn</span>
+              <h3>Project post</h3>
+            </div>
             <p className="preserve-lines">{outputs.linkedin}</p>
           </article>
 
           <article className="output-card">
-            <h3>Interview talking points</h3>
+            <div className="card-header">
+              <span className="output-badge">Interview</span>
+              <h3>Talking points</h3>
+            </div>
             <ul>
               {outputs.interview.map((point) => (
                 <li key={point}>{point}</li>
@@ -357,7 +426,7 @@ ${outputs.card.demo ? `Demo: ${outputs.card.demo}` : ''}`,
           </article>
 
           <article className="portfolio-card">
-            <p className="portfolio-label">Portfolio card</p>
+            <span className="output-badge">Portfolio</span>
             <h3>{outputs.card.title}</h3>
             <p className="portfolio-field">{outputs.card.field}</p>
             <p>{outputs.card.summary}</p>
